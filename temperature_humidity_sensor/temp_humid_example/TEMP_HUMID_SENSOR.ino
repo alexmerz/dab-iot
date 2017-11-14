@@ -2,7 +2,7 @@
 // Written by ladyada, public domain
 
 #include "DHT.h"
-#define DHTPIN 2     // what pin we're connected to
+#define DHTPIN 2     // what pin we're connected to - Sensor läuft auf PIN 2 -> also D2 bei 5V
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 
 DHT dht(DHTPIN, DHTTYPE);
