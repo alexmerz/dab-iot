@@ -21,7 +21,7 @@ ppd()
 
 void FWDs::init()
 {
-  unsigned long duration;
+  unsigned long sample_duration;
   unsigned long sampletime_ms = 30000;
   unsigned long lowpulseoccupancy = 0;
   float ratio = 0;
@@ -34,8 +34,8 @@ void FWDs::init()
 String FWDs::getData()
 {
   // Die Werte auslesen
-  duration = pulseIn(DUST_PIN, LOW);
-  lowpulseoccupancy = lowpulseoccupancy+duration;
+  sample_duration = pulseIn(DUST_PIN, LOW);
+  lowpulseoccupancy = lowpulseoccupancy+sample_duration;
   ratio = lowpulseoccupancy/(sampletime_ms*10.0);  // Integer percentage 0=&gt;100
   concentration = 1.1*pow(ratio,3)-3.8*pow(ratio,2)+520*ratio+0.62; // using spec sheet curve
 
