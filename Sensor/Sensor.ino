@@ -4,16 +4,19 @@
 
 // Inkludiere die Klasse für den Beschleunigungssensor
 #include "FWAcc.h"
+#include "FWSound.h"
 
 // Erzeuge eine Instanz für den Beschleunigungssensor
 // er soll alle 500 MS abgefragt werden
 FWAcc fwacc(500);
+FWSound fwsound(100);
 
 void setup() {
   Serial.begin(9600);
 
   // Initialiserung des Sensors
   fwacc.init();
+  fwsound.init();
   // die Funktion onSensor soll aufgerufen werden, 
   // wenn ein Messzeitpunkt eintritt
   fwacc.setCallback(onSensor);
@@ -21,7 +24,8 @@ void setup() {
 
 void loop() {
   // Pruefe, ob ein Messzeitpunkt vorliegt
-  fwacc.check();  
+  fwacc.check();
+  fwsound.check();
 }
 
 /**
@@ -35,9 +39,13 @@ void onSensor(Framework &sensor)
   // FWACCTYPE ist eine Konstante, welche im Header
   // der FWAcc-Klasse definiert wurde.
   if(FWACCTYPE == sensor.getType()) {
-      Serial.println("Beschleunigung:");
+      Serial.print("Beschleunigung: ");
   }
 
+  else if(sensor.getType() == FWSOUNDTYPE) {
+    Serial.print("Lautstärke: ");
+  }
+  
   // Sensordaten auf dem seriellen Monitor ausgeben
   Serial.println(sensor.getData());
 }
