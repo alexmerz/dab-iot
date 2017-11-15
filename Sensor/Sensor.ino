@@ -39,15 +39,13 @@ void onSensor(Framework &sensor)
   // FWACCTYPE ist eine Konstante, welche im Header
   // der FWAcc-Klasse definiert wurde.
   if(FWACCTYPE == sensor.getType()) {
-      Serial.println("Beschleunigung:");
+      Serial.print("Beschleunigung: ");
   }
 
+  else if(sensor.getType() == FWSOUNDTYPE) {
+    Serial.print("Lautstärke: ");
+  }
+  
   // Sensordaten auf dem seriellen Monitor ausgeben
-  Serial.println(sensor.getData());
-
-  if(sensor.getType() == FWSOUNDTYPE) {
-    Serial.println("Lautstärke: ");
-  }
-
   Serial.println(sensor.getData());
 }
