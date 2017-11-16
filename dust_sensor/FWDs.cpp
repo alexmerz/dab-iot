@@ -14,21 +14,21 @@
 // Unser Konstruktor ruft den Konstruktor
 // der Basisklasse auf und den Konstruktor des ppd-Instanz unseres Objekts
 FWDs::FWDs(unsigned long duration):
-Framework(duration),
-ppd()
+Framework(duration)//,
+//ppd()
 {
 }
 
 void FWDs::init()
 {
-  unsigned long sample_duration;
-  unsigned long sampletime_ms = 30000;
-  unsigned long lowpulseoccupancy = 0;
-  float ratio = 0;
-  float concentration = 0;
-  float sum = 0;
-  int i = 1;
-  float avg = 0;
+ 
+  sampletime_ms = 30000;
+  lowpulseoccupancy = 0;
+  ratio = 0;
+  concentration = 0;
+  sum = 0;
+  i = 1;
+  avg = 0;
 }
 
 String FWDs::getData()
@@ -54,6 +54,6 @@ String FWDs::getData()
 
 const char* FWDs::getType()
 {
-  return FWACCTYPE;
+  return FWDSTYPE;
 }
 #endif

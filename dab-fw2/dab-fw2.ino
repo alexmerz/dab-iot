@@ -94,6 +94,5 @@ void saveData(unsigned long currenttime) {
   data += ",";
   data += sensordata.touch;    
   dataFile.println(data);
-  dataFile.close();
-  
+  dataFile.close(); 
 }

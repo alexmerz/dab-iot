@@ -32,7 +32,16 @@ class FWDs:public Framework
     const char* getType();
     void init();
   private: // nur innerhalb der Klasse sichtbar
-    PPD42NS ppd; // Sensor-Objekt
+//    PPD42NS ppd; // Sensor-Objekt  unsigned long sample_duration;
+  unsigned long sample_duration;
+  unsigned long sampletime_ms;
+  unsigned long lowpulseoccupancy;
+  float ratio;
+  float concentration;
+  float sum;
+  int i;
+  float avg;
+
     /**
      * Achtung: hier wird lediglich der Speicher für das Objekt reserviert,
      * der eigentliche Konstruktor-Aufruf muss in der Implementierung erfolgen.
