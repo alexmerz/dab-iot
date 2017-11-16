@@ -1,6 +1,9 @@
+// Includes
+// Library
 #include <LSD.h>
 #include <Grove_LED_Bar.h>
 
+// Header files
 #include "FWAcc.h"
 #include "FWTouch.h"
 
@@ -18,30 +21,35 @@ unsigned long saveDuration = 500; // Speichere Daten alle x Millisekunden
 unsigned long nextSave = 0;
 
 struct Sensordata {
-  String touch;  
+  String touch;
   String acc;
 } sensordata;
 
-void setup() {    
-  ledbar.begin();      
+void setup() {
+  ledbar.begin();
 
   ledbar.setLevel(10);
   LSD.begin();
-  
-  Serial.begin(9600);      
-  
+
+  Serial.begin(9600);
+
+  // init
   fwacc.init();
   fwtouch.init(7);
-  
-  fwacc.setCallback(onSensor);  
-  fwtouch.setCallback(onSensor);     
 
+  // setCallback
+  fwacc.setCallback(onSensor);
+  fwtouch.setCallback(onSensor);
+
+  // resetCapture
   resetCapture();
-  ledbar.setBits(0);  
+  ledbar.setBits(0);
 }
 
-void loop() {  
-  fwacc.check();  
+void loop() {
+
+  // check
+  fwacc.check();
   fwtouch.check();
 
   unsigned long currentTime = millis();
@@ -58,8 +66,8 @@ void loop() {
   }
 }
 
-void onSensor(Framework &sensor) 
-{    
+void onSensor(Framework &sensor)
+{
   if(FWACCTYPE == sensor.getType()) {
     sensordata.acc = sensor.getData();
   } else if(FWTOUCHTYPE == sensor.getType()) {
@@ -70,30 +78,30 @@ void onSensor(Framework &sensor)
       if(ctReset>10) {
         resetCapture();
       }
-      ledbar.setLevel(ctReset);      
+      ledbar.setLevel(ctReset);
     }
-  }  
+  }
 }
 
 void resetCapture() {
-  ctReset = 0;   
+  ctReset = 0;
   ledbar.setLevel(10);
   if(LSD.exists(logfile)) {
       LSD.remove(logfile);
       delay(1000);
-  }         
+  }
   ledbar.setBits(0);
 }
 
 void saveData(unsigned long currenttime) {
-  LFile dataFile = LSD.open(logfile, FILE_WRITE); 
+  LFile dataFile = LSD.open(logfile, FILE_WRITE);
   String data = "";
   data += String(currenttime);
   data += ",";
   data += sensordata.acc;
   data += ",";
-  data += sensordata.touch;    
+  data += sensordata.touch;
   dataFile.println(data);
   dataFile.close();
-  
+
 }
