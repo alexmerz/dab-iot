@@ -3,9 +3,6 @@
  * Beschleunigungsmesser
  */
 
-#ifndef FWAcc_cpp
-#define FWAcc_cpp
-
 #include "Arduino.h"
 #include "FWAcc.h"
 
@@ -83,4 +80,4 @@ const char* FWAcc::getType()
 {
   return FWACCTYPE;
 }
-#endif
+

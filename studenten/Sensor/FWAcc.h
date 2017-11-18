@@ -11,7 +11,7 @@
 
 // heruntergeladene Bibliothek
 // installiert im Arduino-Verzeichnis unter libraries
-#include <ADXL345.h>
+#include "ADXL345.h"
 
 #include "Arduino.h"
 
