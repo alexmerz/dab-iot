@@ -5,23 +5,24 @@
 #include <LSD.h>
 #include "Grove_LED_Bar.h"
 
-// Inkludiere die Klasse für den Beschleunigungssensor
+// Sensor header files
 #include "FWAcc.h"
 #include "FWSound.h"
 #include "FWTouch.h"
 
 Grove_LED_Bar ledbar(6,5,0);
 
-// Erzeuge eine Instanz für den Beschleunigungssensor
-// er soll alle 500 MS abgefragt werden
+// Initialising sensor objects
 FWAcc fwacc(500);
 FWSound fwsound(100);
 FWTouch fwtouch(1000);
 
+// Variables for touch sensor reset
 int ctReset = 0;
 unsigned long touchResetDuration = 2000; // Touch-Counter nach dieser Zeit resetten
 unsigned long nextTouchReset = 0;
 
+// Variables for data logging
 char* logfile = "log.csv";
 unsigned long saveDuration = 500; // Speichere Daten alle x Millisekunden
 unsigned long nextSave = 0;
@@ -85,7 +86,7 @@ void onSensor(Framework &sensor)
 {  
   // FWACCTYPE ist eine Konstante, welche im Header
   // der FWAcc-Klasse definiert wurde.
-  if(FWACCTYPE == sensor.getType()) {
+  if(sensor.getType() == FWACCTYPE) {
       Serial.print("Beschleunigung: ");
   }
 
