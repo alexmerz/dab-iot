@@ -9,13 +9,15 @@
 #include "FWAcc.h"
 #include "FWSound.h"
 #include "FWTouch.h"
+#include "FWDust.h"
 
 Grove_LED_Bar ledbar(6,5,0);
 
-// Initialising sensor objects
+// Initialising sensor objects including sample duration
 FWAcc fwacc(500);
 FWSound fwsound(100);
 FWTouch fwtouch(1000);
+FWSound fwdust(30000);
 
 // Variables for touch sensor reset
 int ctReset = 0;
@@ -31,6 +33,7 @@ struct Sensordata {
   String touch;
   String acc;
   String sound;
+  String dust;
 } sensordata;
 
 void setup() {
@@ -45,12 +48,14 @@ void setup() {
   fwacc.init();
   fwsound.init();
   fwtouch.init(7);
-  
-  // die Funktion onSensor soll aufgerufen werden, 
+  fwdust.init();
+
+  // die Funktion onSensor soll aufgerufen werden,
   // wenn ein Messzeitpunkt eintritt
   fwacc.setCallback(onSensor);
   fwsound.setCallback(onSensor);
   fwtouch.setCallback(onSensor);
+  fwdust.setCallback(onSensor);
 
   resetCapture();
   ledbar.setBits(0);
@@ -61,6 +66,7 @@ void loop() {
   fwacc.check();
   fwsound.check();
   fwtouch.check();
+  fwdust.check();
 
   unsigned long currentTime = millis();
 
@@ -82,8 +88,8 @@ void loop() {
  * Der uebergebene Parameter sensor ist die Instanz der Sensorklasse,
  * welche den Messzeitpunkt ausgelöst hat
  */
-void onSensor(Framework &sensor) 
-{  
+void onSensor(Framework &sensor)
+{
   // FWACCTYPE ist eine Konstante, welche im Header
   // der FWAcc-Klasse definiert wurde.
   if(sensor.getType() == FWACCTYPE) {
@@ -94,6 +100,11 @@ void onSensor(Framework &sensor)
   else if(sensor.getType() == FWSOUNDTYPE) {
     sensordata.sound = sensor.getData();
     Serial.print("Lautstärke: ");
+  }
+
+  else if(sensor.getType() == FWDUSTTYPE) {
+    sensordata.dust = sensor.getData();
+    Serial.print("Feinstaubkonzentration: ");
   }
 
   else if(FWTOUCHTYPE == sensor.getType()) {
@@ -107,7 +118,7 @@ void onSensor(Framework &sensor)
       ledbar.setLevel(ctReset);
     }
   }
-  
+
   // For debugging only: Sensordaten auf dem seriellen Monitor ausgeben
   Serial.println(sensor.getData());
 }
@@ -132,6 +143,8 @@ void saveData(unsigned long currenttime) {
   data += sensordata.touch;
   data += ",";
   data += sensordata.sound;
+  data += ",";
+  data += sensordata.dust;
   dataFile.println(data);
   dataFile.close();
 }

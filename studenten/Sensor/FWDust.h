@@ -3,8 +3,8 @@
  * Feinstaubsensor
  */
 
-#ifndef FWDs_h
-#define FWDs_h
+#ifndef FWDust_h
+#define FWDust_h
 
 // bereits Teil des Arduino-SDKs
 #include <Wire.h>
@@ -21,13 +21,13 @@
 #include "Framework.h"
 
 // Konstante, um die Klasse später einfach zu identifizieren
-#define FWDSTYPE "DS"
+#define FWDUSTTYPE "DS"
 
-// FWDs erbt die öffentlichen Methoden von Framework
-class FWDs:public Framework
+// FWDust erbt die öffentlichen Methoden von Framework
+class FWDust:public Framework
 {
   public:
-    FWDs(unsigned long duration);
+    FWDust(unsigned long duration);
     String getData();
     const char* getType();
     void init();

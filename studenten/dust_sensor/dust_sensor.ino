@@ -3,25 +3,25 @@
  */
 
 // Inkludiere die Klasse für den Feinstaubsensor
-#include "FWDs.h"
+#include "FWDust.h"
 
 // Erzeuge eine Instanz für den Feinstaubsensor
 // er soll alle 30000 MS abgefragt werden
-FWDs fwds(30000);
+FWDust fwdust(30000);
 
 void setup() {
   Serial.begin(9600);
 
   // Initialiserung des Sensors
-  fwds.init();
+  fwdust.init();
   // die Funktion onSensor soll aufgerufen werden,
   // wenn ein Messzeitpunkt eintritt
-  fwds.setCallback(onSensor);
+  fwdust.setCallback(onSensor);
 }
 
 void loop() {
   // Pruefe, ob ein Messzeitpunkt vorliegt
-  fwds.check();
+  fwdust.check();
 }
 
 /**
@@ -33,8 +33,8 @@ void loop() {
 void onSensor(Framework &sensor)
 {
   // FWACCTYPE ist eine Konstante, welche im Header
-  // der FWDs-Klasse definiert wurde.
-  if(FWDSTYPE == sensor.getType()) {
+  // der FWDust-Klasse definiert wurde.
+  if(FWDUSTTYPE == sensor.getType()) {
       Serial.println("Feinstaubkonzentration:");
   }
 

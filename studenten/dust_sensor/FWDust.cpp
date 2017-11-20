@@ -3,25 +3,25 @@
  * Feinstaubsensor
  */
 
-#ifndef FWDs_cpp
-#define FWDs_cpp
+#ifndef FWDust_cpp
+#define FWDust_cpp
 
 #include "Arduino.h"
-#include "FWDs.h"
+#include "FWDust.h"
 
 #define DUST_PIN 8
 
 // Unser Konstruktor ruft den Konstruktor
 // der Basisklasse auf und den Konstruktor des ppd-Instanz unseres Objekts
-FWDs::FWDs(unsigned long duration):
+FWDust::FWDust(unsigned long duration):
 Framework(duration)//,
 //ppd()
 {
 }
 
-void FWDs::init()
+void FWDust::init()
 {
- 
+
   sampletime_ms = 30000;
   lowpulseoccupancy = 0;
   ratio = 0;
@@ -31,7 +31,7 @@ void FWDs::init()
   avg = 0;
 }
 
-String FWDs::getData()
+String FWDust::getData()
 {
   // Die Werte auslesen
   sample_duration = pulseIn(DUST_PIN, LOW);
@@ -52,8 +52,8 @@ String FWDs::getData()
   return s;
 }
 
-const char* FWDs::getType()
+const char* FWDust::getType()
 {
-  return FWDSTYPE;
+  return FWDUSTTYPE;
 }
 #endif
