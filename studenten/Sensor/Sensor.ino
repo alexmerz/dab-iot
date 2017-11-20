@@ -10,6 +10,7 @@
 #include "FWSound.h"
 #include "FWTouch.h"
 #include "FWDust.h"
+#include "FQUv.h"
 
 Grove_LED_Bar ledbar(6,5,0);
 
@@ -18,6 +19,7 @@ FWAcc fwacc(500);
 FWSound fwsound(100);
 FWTouch fwtouch(1000);
 FWSound fwdust(30000);
+FWUv fwuv(500);
 
 // Variables for touch sensor reset
 int ctReset = 0;
@@ -34,6 +36,7 @@ struct Sensordata {
   String acc;
   String sound;
   String dust;
+  String uv;
 } sensordata;
 
 void setup() {
@@ -49,6 +52,7 @@ void setup() {
   fwsound.init();
   fwtouch.init(7);
   fwdust.init();
+  fwuv.init();
 
   // die Funktion onSensor soll aufgerufen werden,
   // wenn ein Messzeitpunkt eintritt
@@ -56,6 +60,7 @@ void setup() {
   fwsound.setCallback(onSensor);
   fwtouch.setCallback(onSensor);
   fwdust.setCallback(onSensor);
+  fwuv.setCallback(onSensor);
 
   resetCapture();
   ledbar.setBits(0);
@@ -67,6 +72,7 @@ void loop() {
   fwsound.check();
   fwtouch.check();
   fwdust.check();
+  fwuv.check();
 
   unsigned long currentTime = millis();
 
@@ -107,6 +113,11 @@ void onSensor(Framework &sensor)
     Serial.print("Feinstaubkonzentration: ");
   }
 
+  else if(sensor.getType() == FWUVTYPE) {
+    sensordata.uv = sensor.getData();
+    Serial.print("UV Index: ");
+  }
+
   else if(FWTOUCHTYPE == sensor.getType()) {
     sensordata.touch = sensor.getData();
     if(sensordata.touch.equals("1")) {
@@ -145,6 +156,8 @@ void saveData(unsigned long currenttime) {
   data += sensordata.sound;
   data += ",";
   data += sensordata.dust;
+  data += ",";
+  data += sensordata.uv;
   dataFile.println(data);
   dataFile.close();
 }

@@ -9,7 +9,7 @@
 #include "Arduino.h"
 #include "FWAcc.h"
 
-#define DUST_PIN A0
+#define DUST_PIN A1
 
 // Unser Konstruktor ruft den Konstruktor
 // der Basisklasse auf und den Konstruktor des adxl-Instanz unseres Objekts
@@ -20,9 +20,8 @@ Framework(duration)
 
 void FWAcc::init()
 {
-  int value;
-  long sum=0;
-  long index=0;
+  int sensorValue;
+  long uvIndex=0;
 }
 
 String FWUv::getData()
