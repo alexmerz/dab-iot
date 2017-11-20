@@ -26,34 +26,43 @@ void FWDust::init()
   lowpulseoccupancy = 0;
   ratio = 0;
   concentration = 0;
-  sum = 0;
-  i = 1;
-  avg = 0;
+  
+  this->samples = 0;
+  this->sum = 0;
 }
 
 String FWDust::getData()
 {
+
   // Die Werte auslesen
-  sample_duration = pulseIn(DUST_PIN, LOW);
-  lowpulseoccupancy = lowpulseoccupancy+sample_duration;
-  ratio = lowpulseoccupancy/(sampletime_ms*10.0);  // Integer percentage 0=&gt;100
+  ratio = (sum/(sampletime_ms*10.0));  // Integer percentage 0=&gt;100
   concentration = 1.1*pow(ratio,3)-3.8*pow(ratio,2)+520*ratio+0.62; // using spec sheet curve
 
-  // Summe der Konzentrationen
-  sum += concentration;
-  // Durchschnittswert ermitteln
-  avg = sum / i;
-  // Reset lowpulseoccupancy
-  lowpulseoccupancy = 0;
-  // i++
-  i += 1;
-
-  String s(avg);
+  String s(concentration);
   return s;
 }
 
 const char* FWDust::getType()
 {
   return FWDUSTTYPE;
+}
+
+void FWDust::check() {
+  Serial.print("SUM -> ");
+  Serial.println(sum);
+  if(millis() > _nextts) {
+    _nextts = millis() + _duration;  
+
+    if(_callback) {
+      _callback(*this);
+      
+      this->samples = 0;
+      this->sum = 0;
+    }
+  } 
+  else {
+    this->samples++;
+    this->sum += pulseIn(DUST_PIN, LOW);
+  }
 }
 #endif

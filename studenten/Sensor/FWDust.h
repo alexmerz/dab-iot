@@ -31,6 +31,7 @@ class FWDust:public Framework
     String getData();
     const char* getType();
     void init();
+    void check();
   private: // nur innerhalb der Klasse sichtbar
 //    PPD42NS ppd; // Sensor-Objekt  unsigned long sample_duration;
   unsigned long sample_duration;
@@ -38,9 +39,8 @@ class FWDust:public Framework
   unsigned long lowpulseoccupancy;
   float ratio;
   float concentration;
-  float sum;
-  int i;
-  float avg;
+  int samples;
+  uint32_t sum;
 
     /**
      * Achtung: hier wird lediglich der Speicher für das Objekt reserviert,
