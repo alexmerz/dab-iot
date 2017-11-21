@@ -7,9 +7,9 @@
 #define FWUv_cpp
 
 #include "Arduino.h"
-#include "FWAcc.h"
+#include "FWUv.h"
 
-#define DUST_PIN A1
+#define UV_PIN A1
 
 // Unser Konstruktor ruft den Konstruktor
 // der Basisklasse auf und den Konstruktor des adxl-Instanz unseres Objekts
@@ -18,18 +18,19 @@ Framework(duration)
 {
 }
 
-void FWAcc::init()
+void FWUv::init()
 {
-  int sensorValue;
-  long uvIndex=0;
+  int sensorValue = 0;
+  long uvIndex = 0;
 }
 
 String FWUv::getData()
 {
-  sensorValue=analogRead(DUST_PIN);
+  sensorValue = analogRead(UV_PIN);
 
   long uvIndex = (sensorValue*1000/4.3-83)/21;
-  return uvIndex;
+  String s(uvIndex);
+  return s;
 }
 
 const char* FWUv::getType()
