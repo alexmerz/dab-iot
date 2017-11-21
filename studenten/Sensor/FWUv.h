@@ -9,7 +9,7 @@
 
 #define FWUVTYPE "UV"
 
-class FWAcc:public Framework
+class FWUv:public Framework
 {
   public:
     FWUv(unsigned long duration);
@@ -17,6 +17,8 @@ class FWAcc:public Framework
     const char* getType();
     void init();
   private: // nur innerhalb der Klasse sichtbar
+    int sensorValue;
+    long uvIndex;
     /**
      * Achtung: hier wird lediglich der Speicher für das Objekt reserviert,
      * der eigentliche Konstruktor-Aufruf muss in der Implementierung erfolgen.
