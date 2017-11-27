@@ -120,6 +120,7 @@ void onSensor(Framework &sensor)
 
   else if(FWTOUCHTYPE == sensor.getType()) {
     sensordata.touch = sensor.getData();
+    Serial.print("Touch: ");
     if(sensordata.touch.equals("1")) {
       nextTouchReset = millis()+touchResetDuration;
       ctReset++;
