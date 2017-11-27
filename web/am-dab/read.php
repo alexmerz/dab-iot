@@ -57,14 +57,14 @@ $f = "SELECT ";
 $f.= " token, ts_send, ts_insert, sound, light, uv, dust, ";
 $f.= " humidity, temperature, ST_AsText(position) AS longlat, altitude, z_acc, pressure";
 $f.= " FROM data WHERE ";
-$f.= " ts_insert > '%s' ";
-$f.= " AND ts_insert < '%s' ";
+$f.= " ts_send > '%s' ";
+$f.= " AND ts_send < '%s' ";
 
 if(null !== $token) {
 	$f.= " AND token = ".$token." ";
 }
 
-$f.= " ORDER BY token, ts_send";
+$f.= " ORDER BY token, ts_send ASC";
 
 $sql = sprintf($f, $starttime, $endtime);
 
