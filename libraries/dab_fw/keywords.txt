@@ -1,0 +1,5 @@
+init KEYWORD2
+getData KEYWORD2
+getType KEYWORD2
+check KEYWORD2
+setCallback KEYWORD2
