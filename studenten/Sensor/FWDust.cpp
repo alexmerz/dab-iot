@@ -48,8 +48,6 @@ const char* FWDust::getType()
 }
 
 void FWDust::check() {
-  Serial.print("SUM -> ");
-  Serial.println(sum);
   if(millis() > _nextts) {
     _nextts = millis() + _duration;  
 
