@@ -18,7 +18,7 @@ Grove_LED_Bar ledbar(6,5,0);
 FWAcc fwacc(500);
 FWSound fwsound(100);
 FWTouch fwtouch(1000);
-FWSound fwdust(30000);
+FWDust fwdust(30000);
 FWUv fwuv(500);
 
 // Variables for touch sensor reset
