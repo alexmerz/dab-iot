@@ -1,27 +1,13 @@
-/**
- * Implementierung der Sensorklasse für den
- * Feinstaubsensor
- */
-
-#ifndef FWDust_cpp
-#define FWDust_cpp
-
 #include "Arduino.h"
 #include "FWDust.h"
 
 #define DUST_PIN 8
 
-// Unser Konstruktor ruft den Konstruktor
-// der Basisklasse auf und den Konstruktor des ppd-Instanz unseres Objekts
 FWDust::FWDust(unsigned long duration):
-Framework(duration)//,
-//ppd()
-{
+    Framework(duration) {
 }
 
-void FWDust::init()
-{
-  // Speicher für Variablen wurden reserviert in FWDust.h class FWDust:public Framework {}
+void FWDust::init() {
   sampletime_ms = 30000;
   lowpulseoccupancy = 0;
   ratio = 0;
@@ -31,10 +17,7 @@ void FWDust::init()
   this->sum = 0;
 }
 
-String FWDust::getData()
-{
-
-  // Die Werte auslesen
+String FWDust::getData() {
   ratio = (sum/(sampletime_ms*10.0));  // Integer percentage 0=&gt;100
   concentration = 1.1*pow(ratio,3)-3.8*pow(ratio,2)+520*ratio+0.62; // using spec sheet curve
 
@@ -42,8 +25,7 @@ String FWDust::getData()
   return s;
 }
 
-const char* FWDust::getType()
-{
+const char* FWDust::getType() {
   return FWDUSTTYPE;
 }
 
@@ -63,4 +45,4 @@ void FWDust::check() {
     this->sum += pulseIn(DUST_PIN, LOW);
   }
 }
-#endif
+
