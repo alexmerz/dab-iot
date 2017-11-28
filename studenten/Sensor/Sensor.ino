@@ -11,6 +11,7 @@
 #include "FWTouch.h"
 #include "FWDust.h"
 #include "FWUv.h"
+#include "FWBaro.h"
 
 Grove_LED_Bar ledbar(6,5,0);
 
@@ -20,6 +21,7 @@ FWSound fwsound(100);
 FWTouch fwtouch(1000);
 FWDust fwdust(30000);
 FWUv fwuv(500);
+FWBaro fwbaro(1000);
 
 // Variables for touch sensor reset
 int ctReset = 0;
@@ -37,6 +39,7 @@ struct Sensordata {
   String sound;
   String dust;
   String uv;
+  String baro;
 } sensordata;
 
 void setup() {
@@ -53,6 +56,7 @@ void setup() {
   fwtouch.init(7);
   fwdust.init();
   fwuv.init();
+  fwbaro.init();
 
   // die Funktion onSensor soll aufgerufen werden,
   // wenn ein Messzeitpunkt eintritt
@@ -61,7 +65,7 @@ void setup() {
   fwtouch.setCallback(onSensor);
   fwdust.setCallback(onSensor);
   fwuv.setCallback(onSensor);
-
+  fwbaro.setCallback(onSensor);
   resetCapture();
   ledbar.setBits(0);
 }
@@ -73,6 +77,7 @@ void loop() {
   fwtouch.check();
   fwdust.check();
   fwuv.check();
+  fwbaro.check();
 
   unsigned long currentTime = millis();
 
@@ -116,6 +121,11 @@ void onSensor(Framework &sensor)
   else if(sensor.getType() == FWUVTYPE) {
     sensordata.uv = sensor.getData();
     Serial.print("UV Index: ");
+  }
+
+  else if(sensor.getType() == FWBAROTYPE) {
+    sensordata.baro = sensor.getData();
+    Serial.print("Barometer: ");
   }
 
   else if(FWTOUCHTYPE == sensor.getType()) {
