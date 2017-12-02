@@ -51,7 +51,7 @@ boolean handleDeviceId(void *deviceId) {
     char *imeiFromOs = NULL;
     while((imeiFromOs = vm_get_imei()) == NULL)
         ;
-    strncpy((char *)deviceId, imeiFromOs, 16);
+    strncpy((char *)deviceId, imeiFromOs, DEVICE_ID_LEN);
 }
 
 void initDeviceId(void) {
