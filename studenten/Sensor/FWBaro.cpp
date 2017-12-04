@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "FWBaro.h"
 
-#define BARO_PIN D2
+#define BARO_PIN 2
 
 float temperature;
 float pressure;
@@ -27,13 +27,13 @@ String FWBaro::getData() {
   altitude = myBarometer.calcAltitude(pressure); //Uncompensated caculation - in Meters
   atm = pressure / 101325;
 
-  String s(temperature);
-  s.concat(',');
-  s.concat(pressure);
-  s.concat(',');
-  s.concat(altitude);
-  s.concat(',');
-  s.concat(atm);  
+  String s(temperature);  //display 2 decimal places
+   s.concat(',');
+   s.concat(pressure); // Druck //whole number only.
+   s.concat(',');
+   s.concat(altitude); // Höhe  //display 2 decimal places
+   s.concat(',');
+   s.concat(atm);  // Physikalische Atmosphäre  //display 4 decimal places
   return s;
 }
 
@@ -54,6 +54,6 @@ void FWBaro::check() {
   } 
   else {
     this->samples++;
-    this->sum += digitalRead(BARO_PIN);
+    this->sum += pulseIn(BARO_PIN, LOW);    
   }
 }

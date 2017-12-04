@@ -6,7 +6,7 @@
 
 
 * Acceleration sensor: I2C (I)
-
+* Barometer: I2C (II)
 
 * Temperature sensor: D2
 * LED Bar: D5
