@@ -1,5 +1,8 @@
 #include <LWiFi.h>
 #include <LWiFiClient.h>
+#include <LGPRS.h>    
+#include <LGPRSClient.h>
+
 
 #include "FWAcc.h" // I2C
 #include "FWGPS.h" // Intern
@@ -10,7 +13,8 @@
 #define AP "WlanSSID"
 #define PW "Passwort"
 
-LWiFiClient c;
+//LWiFiClient c;
+LGPRSClient c;
 
 FWAcc fwacc(200);
 FWGPS fwgps(1000);
@@ -44,8 +48,11 @@ void setup() {
   fwuv.setCallback(onSensor);
   fwlight.setCallback(onSensor);
 
-  LWiFi.connect(AP, LWiFiLoginInfo(LWIFI_WPA, PW));
-//  LWiFi.connect("MeinTelefon");
+//  LWiFi.connect(AP, LWiFiLoginInfo(LWIFI_WPA, PW));
+//  LWiFi.connect("OnePlus 3T");
+  while (!LGPRS.attachGPRS()) {
+    delay(500);
+  }
 
 }
 
@@ -74,18 +81,6 @@ void onSensor(Framework &sensor) {
   } else if (FWLIGHTTYPE == sensor.getType()) {
     sensordata.light = sensor.getData();
   }
-  /*
-    Serial.print("ZACC: ");
-    Serial.println(sensordata.acc);
-    Serial.print("UV: ");
-    Serial.println(sensordata.uv);
-    Serial.print("LIGHT: ");
-    Serial.println(sensordata.light);
-    Serial.print("SOUND: ");
-    Serial.println(sensordata.sound);
-    Serial.print("GPS: ");
-    Serial.println(sensordata.gps);
-  */
 }
 
 void sendData(struct Sensordata sensordata) {
