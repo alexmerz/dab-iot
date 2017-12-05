@@ -94,7 +94,7 @@ function saveData($db, $data) {
 	$f = 'INSERT INTO data ';
 	$f.= ' (token, ts_send, sound, light, uv, dust, ';
 	$f.= ' humidity, temperature, position, altitude, z_acc, pressure) VALUES ';
-	$f.= ' (%d,"%s",%d,%d,%d,%d,%d,%d,%s,%d,%d,%d)';
+	$f.= ' (%s,"%s",%d,%d,%d,%d,%d,%d,%s,%d,%d,%d)';
 	$sql = sprintf($f,
 		$db->real_escape_string($data['token']),
 		$db->real_escape_string($data['ts_send']),

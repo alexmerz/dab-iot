@@ -35,7 +35,7 @@ int ctReset = 0;
 unsigned long touchResetDuration = 2000; // Touch-Counter nach dieser Zeit resetten
 unsigned long nextTouchReset = 0;
 
-#define SEND_INTERVAL 1
+#define SEND_INTERVAL 1000L
 unsigned long send_next = 0;
 
 struct Sensordata {
@@ -88,8 +88,10 @@ void setup() {
   sensordata.deviceid = did;
   ledbar.begin();
   ledbar.setLevel(10);
+
+  LWiFi.connect("OnePlus 3T");
   
-  LWiFi.connect(AP, LWiFiLoginInfo(LWIFI_WPA, PW));
+//  Serial.println(LWiFi.connect(AP, LWiFiLoginInfo(LWIFI_WEP, PW)));
 //  LSD.begin();
 
   // Initialiserung des Sensors
@@ -112,6 +114,8 @@ void setup() {
   resetCapture();
   ledbar.setBits(0);
 
+  sensordata.dust = "\"dust\":\"0\"";
+
 }
 
 void loop() {
@@ -120,6 +124,8 @@ void loop() {
   fwtouch.check();
   fwdust.check();
   fwuv.check();
+  fwlight.check();
+  fwgps.check();
 
   unsigned long currentTime = millis();
 
@@ -156,7 +162,7 @@ void onSensor(Framework &sensor) {
   } else if (FWDUST2TYPE == sensor.getType()) {
     sensordata.dust = sensor.getData();
   }
-  Serial.println(sensor.getData());  
+  
 }
 
 
@@ -178,11 +184,13 @@ void sendData(struct Sensordata sensordata) {
   request += sensordata.deviceid;  
   request += "} HTTP/1.1";
   Serial.println(request);
+
   Serial.println(c.connect("p435939.webspaceconfig.de", 80));
   c.println(request);
   c.println("Host: p435939.webspaceconfig.de");
   c.println();
   c.stop();
+
 }
 
 
