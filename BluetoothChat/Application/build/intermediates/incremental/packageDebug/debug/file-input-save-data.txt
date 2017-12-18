@@ -1,0 +1,7 @@
+#Internal package file, do not edit.
+#Mon Dec 18 23:51:44 CET 2017
+0.baseType=DIRECTORY
+0.base=/Users/alexandermerz/Documents/Projekte/tenNews/androidapp/BluetoothChat/Application/build/intermediates/transforms/dexMerger/debug/19
+0.path=classes.dex
+0.set=DEX
+count=1

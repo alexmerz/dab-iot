@@ -1,0 +1,4 @@
+#Sun Dec 17 21:20:51 CET 2017
+base.0=/Users/alexandermerz/Documents/Projekte/tenNews/androidapp/BluetoothChat/Application/build/intermediates/transforms/dexMerger/debug/5
+path.0=classes.dex
+renamed.0=classes.dex
