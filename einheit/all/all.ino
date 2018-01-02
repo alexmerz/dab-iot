@@ -78,7 +78,6 @@ char *getDeviceId(void) {
 void resetCapture() {
   ctReset = 0;
   ledbar.setLevel(10);
-  // TODO: Senden stoppen/starten
   ledbar.setBits(0);
 }
 
@@ -96,10 +95,6 @@ void setup() {
   did += getDeviceId();
   did += "\"";
   sensordata.deviceid = did;
-
-  
-//  LWiFi.connect("OnePlus 3T");
-    
 
   // Initialiserung des Sensors
   fwacc.init();
@@ -166,7 +161,7 @@ void loop() {
         delay(100);
         ledbar.setLevel(ctReset);
 
-        LBTServer.begin((uint8_t*)"DAB-IoT", (uint8_t*)"9876");
+        LBTServer.begin((uint8_t*)deviceId, (uint8_t*)"9876");
         btState = 1;
         LBTDeviceInfo info;
         if (LBTServer.getHostDeviceInfo(&info))
