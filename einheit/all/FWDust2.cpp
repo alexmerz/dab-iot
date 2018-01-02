@@ -27,7 +27,7 @@ extern "C" {
 
 static void onLow(void* parameter, VM_DCL_EVENT event, VM_DCL_HANDLE device_handle) {
   if(gExinterruptsPio[__fwdust2_pin].handle == device_handle)
-    __fwdust2_state = !__fwdust2_state;  
+    __fwdust2_state = !__fwdust2_state;
 }
 
 #ifdef __cplusplus
@@ -39,25 +39,28 @@ Framework(30000)
 {
   lowpulseoccupancy = 0;
   old_state = 0;
-  sampletime_ms = 30000;    
+  sampletime_ms = 30000;
 }
 
-String FWDust2::getData() 
+String FWDust2::getData()
 {
   String data = "\"dust\":\"";
-  // Erst Messwerte ausgeben, wenn sich das Gerät beruhigt hat
+  // Gerät muss warm laufen -> wait_before_measurement
+  // Werte unter 0.63 -> 0
+  // Werte über 1,114,000 sind nicht möglich -> 0
+  // Achtung: Werte > 8000 können nicht mehr präzise bestimmmt werden
   if(millis() > wait_before_measurement && concentration > 0.63 && concentration < 1114000L) {
-    data += concentration;  
-  } 
+    data += concentration;
+  }
   // ansonsten gib diesen Wert aus
   else {
-    data += "0"; 
+    data += "0";
   }
   data += "\"";
   return data;
 }
 
-void FWDust2::check() 
+void FWDust2::check()
 {
   if(__fwdust2_state != old_state) { // Statusaenderungen durch Interrupt immer testen
     switchEINT(__fwdust2_pin, __fwdust2_state); // Polarität der Erkennung aendern
@@ -65,18 +68,18 @@ void FWDust2::check()
         eint_starttime = micros();
     } else if(__fwdust2_state == 0) { // Signal wieder HIGH
       lowpulseoccupancy = lowpulseoccupancy + (micros() - eint_starttime);
-      eint_starttime = 0;    
+      eint_starttime = 0;
     }
-    old_state = __fwdust2_state;     
-  } 
+    old_state = __fwdust2_state;
+  }
   if((millis() - sensor_starttime) >= sampletime_ms) {
     // Serial.println(1.1*pow(1,3)-3.8*pow(1,2)+520.0+0.62); // pow Werte mit 100 multiplizieren, max Wert: 1114000.62
     ratio = lowpulseoccupancy/(sampletime_ms*10.0);
     concentration = 1.1*pow(ratio, 3)-3.8*pow(ratio,2)+520.0*ratio+0.62;
     lowpulseoccupancy = 0;
-    sensor_starttime = millis();  
-    _callback(*this);      
-  }  
+    sensor_starttime = millis();
+    _callback(*this);
+  }
 }
 
 void FWDust2::init()
@@ -84,20 +87,20 @@ void FWDust2::init()
   enableEINT(__fwdust2_pin);
   wait_before_measurement = millis() + 30000L; // Warte 30 Sekunden bis sich das Geraet entscheidet anstaendige Werte auszuspucken
   sensor_starttime = millis();
-  eint_starttime = micros(); // Achtung: Mikrosekunden fuer Interrupts!  
+  eint_starttime = micros(); // Achtung: Mikrosekunden fuer Interrupts!
 }
 
-void FWDust2::switchEINT(int pin, int state) 
+void FWDust2::switchEINT(int pin, int state)
 {
   VM_DCL_HANDLE eint_handle;
   changePinType(gExinterruptsPio[pin].pin, PIO_EINT, &eint_handle);
-  vm_eint_ctrl_config_t eint_config;  
+  vm_eint_ctrl_config_t eint_config;
   memset(&eint_config,0, sizeof(vm_eint_ctrl_config_t));
   eint_config.act_polarity = __fwdust2_state;
-  eint_config.auto_unmask = 1;    
-  eint_config.debounce_en = 1;        
-  vm_dcl_control(eint_handle ,VM_EINT_CMD_MASK,NULL);                                            
-  vm_dcl_control(eint_handle ,VM_EINT_CMD_CONFIG,(void *)&eint_config);   
+  eint_config.auto_unmask = 1;
+  eint_config.debounce_en = 1;
+  vm_dcl_control(eint_handle ,VM_EINT_CMD_MASK,NULL);
+  vm_dcl_control(eint_handle ,VM_EINT_CMD_CONFIG,(void *)&eint_config);
 }
 
 void FWDust2::enableEINT(int pin) {
@@ -118,13 +121,13 @@ void FWDust2::enableEINT(int pin) {
   vm_dcl_registercallback(eint_handle , VM_EVENT_EINT_TRIGGER,(VM_DCL_CALLBACK)onLow,(void*)NULL );
   sens_data.sensitivity = 0;
   eint_config.act_polarity = __fwdust2_state;
-  eint_config.auto_unmask = 1;    
-  vm_dcl_control(eint_handle ,VM_EINT_CMD_SET_SENSITIVITY,(void *)&sens_data); 
-  deboun_time.debounce_time = 1;  
+  eint_config.auto_unmask = 1;
+  vm_dcl_control(eint_handle ,VM_EINT_CMD_SET_SENSITIVITY,(void *)&sens_data);
+  deboun_time.debounce_time = 1;
   vm_dcl_control(eint_handle ,VM_EINT_CMD_SET_HW_DEBOUNCE,(void *)&deboun_time);
-  vm_dcl_control(eint_handle ,VM_EINT_CMD_MASK,NULL);                                        
-  eint_config.debounce_en = 1;    
-  vm_dcl_control(eint_handle ,VM_EINT_CMD_CONFIG,(void *)&eint_config);   
+  vm_dcl_control(eint_handle ,VM_EINT_CMD_MASK,NULL);
+  eint_config.debounce_en = 1;
+  vm_dcl_control(eint_handle ,VM_EINT_CMD_CONFIG,(void *)&eint_config);
 }
 
 
@@ -134,4 +137,3 @@ const char* FWDust2::getType()
 }
 
 #endif
-
