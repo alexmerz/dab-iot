@@ -24,6 +24,7 @@ class FWDust2:public Framework
   protected:
     float concentration;
     float ratio;    
+    unsigned long wait_before_measurement;
     unsigned long lowpulseoccupancy;
     unsigned long eint_starttime;
     unsigned long sensor_starttime;

@@ -45,7 +45,14 @@ Framework(30000)
 String FWDust2::getData() 
 {
   String data = "\"dust\":\"";
-  data += concentration;
+  // Erst Messwerte ausgeben, wenn sich das Gerät beruhigt hat
+  if(millis() > wait_before_measurement && concentration > 0.63 && concentration < 1114000L) {
+    data += concentration;  
+  } 
+  // ansonsten gib diesen Wert aus
+  else {
+    data += "0"; 
+  }
   data += "\"";
   return data;
 }
@@ -63,6 +70,7 @@ void FWDust2::check()
     old_state = __fwdust2_state;     
   } 
   if((millis() - sensor_starttime) >= sampletime_ms) {
+    // Serial.println(1.1*pow(1,3)-3.8*pow(1,2)+520.0+0.62); // pow Werte mit 100 multiplizieren, max Wert: 1114000.62
     ratio = lowpulseoccupancy/(sampletime_ms*10.0);
     concentration = 1.1*pow(ratio, 3)-3.8*pow(ratio,2)+520.0*ratio+0.62;
     lowpulseoccupancy = 0;
@@ -74,6 +82,7 @@ void FWDust2::check()
 void FWDust2::init()
 {
   enableEINT(__fwdust2_pin);
+  wait_before_measurement = millis() + 30000L; // Warte 30 Sekunden bis sich das Geraet entscheidet anstaendige Werte auszuspucken
   sensor_starttime = millis();
   eint_starttime = micros(); // Achtung: Mikrosekunden fuer Interrupts!  
 }
