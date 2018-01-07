@@ -18,11 +18,13 @@ String FWBaro::getData() {
   atm = pressure / 101325;
 
   String s("\"press\":\"");  //display 2 decimal places
-   s.concat(atm);
-   s.concat("\",\"temp\":\"");
-   s.concat(temperature);
-   s.concat("\"");
-/*
+  s.concat(atm);
+  s.concat("\"");    
+/*   
+ 
+    s.concat("\",\"temp\":\"");
+    s.concat(temperature);
+    s.concat("\"");
    s.concat(pressure); // Druck //whole number only.
    s.concat(',');
    s.concat(altitude); // Höhe  //display 2 decimal places

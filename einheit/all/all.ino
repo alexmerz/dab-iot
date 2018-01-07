@@ -14,6 +14,7 @@
 #include "FWSound.h"
 #include "FWTouch.h"
 #include "FWDust2.h"
+#include "FWHumi.h"
 #include "FWUv.h"
 #include "FWGPS.h"
 #include "FWLight.h"
@@ -27,6 +28,7 @@ Grove_LED_Bar ledbar(6,5,0);
 
 FWAcc fwacc(500);
 FWBaro fwbaro(1000);
+FWHumi fwhumi(2000);
 FWSound fwsound(100);
 FWTouch fwtouch(500);
 FWUv fwuv(500);
@@ -48,6 +50,7 @@ struct Sensordata {
   String touch;
   String acc;
   String baro;  
+  String humi;
   String sound;
   String dust;
   String uv;
@@ -99,6 +102,7 @@ void setup() {
   // Initialiserung des Sensors
   fwacc.init();
   fwbaro.init();
+  fwhumi.init();
   fwsound.init();
   fwtouch.init(7);
   fwdust.init();
@@ -108,6 +112,7 @@ void setup() {
 
   fwacc.setCallback(onSensor);
   fwbaro.setCallback(onSensor);
+  fwhumi.setCallback(onSensor);
   fwsound.setCallback(onSensor);
   fwtouch.setCallback(onSensor);
   fwdust.setCallback(onSensor);
@@ -119,6 +124,7 @@ void setup() {
   ledbar.setBits(0);
 
   sensordata.dust = "\"dust\":\"0\"";
+  sensordata.humi = "\"humi\":\"0\"";
 
 }
 
@@ -126,6 +132,7 @@ void loop() {
   
   fwacc.check();
   fwbaro.check();
+  fwhumi.check();
   fwsound.check();
   fwtouch.check();
   fwdust.check();
@@ -194,6 +201,10 @@ void loop() {
       send_next = millis() + SEND_INTERVAL;
     }    
   }
+
+  if(!radioState && !btState) {
+    Serial.println(formatData(sensordata));
+  }
   
 }
 /*
@@ -208,6 +219,8 @@ void onSensor(Framework &sensor) {
     sensordata.acc = sensor.getData();
   } else if (FWBAROTYPE == sensor.getType()) {    
     sensordata.baro = sensor.getData(); 
+  } else if (FWHUMITYPE == sensor.getType()) {    
+    sensordata.humi = sensor.getData(); 
   } else if (FWGPSTYPE == sensor.getType()) {
     sensordata.gps = sensor.getData();
   } else if (FWSOUNDTYPE == sensor.getType()) {
@@ -232,7 +245,9 @@ void onSensor(Framework &sensor) {
 
 
 String formatData(struct Sensordata sensordata) {
-  String request = "{\"humi\":\"0\",";
+  String request = "{";
+  request += sensordata.humi;
+  request += ",";  
   request += sensordata.acc;
   request += ",";
   request += sensordata.baro;
@@ -258,7 +273,6 @@ void sendDataBT(struct Sensordata sensordata) {
     String str = formatData(sensordata);
     str += "\n";
     LBTServer.write((uint8_t*)str.c_str(), str.length());                  
-    Serial.println(str);
   }
 }
  
