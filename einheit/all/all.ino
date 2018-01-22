@@ -1,13 +1,23 @@
+// #define CGPRS
+#define CWIFI
+
 #include <LBT.h>
 #include <LBTServer.h>
-#include <LWiFi.h>
-#include <LWiFiClient.h>
-#include <LGPRS.h>    
-#include <LGPRSClient.h>
 #include "Grove_LED_Bar.h"
 #include <vmsim.h>
 #include <LTask.h>
 #include <string.h>
+
+#ifdef CWIFI
+#include <LWiFi.h>
+#include <LWiFiClient.h>
+#endif
+
+#ifdef CGPRS
+#include <LGPRS.h>    
+#include <LGPRSClient.h>
+#endif
+
 
 #include "FWAcc.h"
 #include "FWBaro.h"
@@ -19,10 +29,27 @@
 #include "FWGPS.h"
 #include "FWLight.h"
 
-#define AP "SSID"
-#define PW "Passwort"
+#ifdef CGPRS
+#define VODAFONE "m2m.vodafone.de"
+#define VODAFONE_USERNAME ""
+#define VODAFONE_PASSWORD
+#define TELEKOM "internet.telekom"
+#define TELEKOM_USERNAME "t-mobile"
+#define TELEKOM_PASSWORD "tm"
+#define AP VODAFONE 
+#define USERNAME VODAFONE_USERNAME
+#define PW VODAFONE_PASSWORD
 
-LGPRSClient c;
+LGPRSClient client;
+#endif
+
+#ifdef CWIFI
+#define AP "SSID"
+#define PW "Password"
+
+LWiFiClient client;
+#endif
+
 
 Grove_LED_Bar ledbar(6,5,0);
 
@@ -37,7 +64,7 @@ FWLight fwlight(1000);
 FWGPS fwgps(1000);
 
 int ctReset = 0;
-unsigned long touchResetDuration = 5000; // Touch-Counter nach dieser Zeit resetten
+unsigned long touchResetDuration = 5000; // reset Touch counter after 5 seconds
 unsigned long nextTouchReset = 0;
 
 #define SEND_INTERVAL 1000L
@@ -99,7 +126,7 @@ void setup() {
   did += "\"";
   sensordata.deviceid = did;
 
-  // Initialiserung des Sensors
+  // Sebsor init
   fwacc.init();
   fwbaro.init();
   fwhumi.init();
@@ -154,11 +181,20 @@ void loop() {
       
       radioState = !radioState;
       if(radioState) {
-        Serial.println(LWiFi.connect(AP, LWiFiLoginInfo(LWIFI_WPA, PW)));
+        #ifdef CWIFI
+        LWiFi.connect(AP, LWiFiLoginInfo(LWIFI_WPA, PW));
+        #endif
+
+        #ifdef CGPRS
+        LGPRS.attachGPRS(AP, USERNAME, PW);
+        #endif        
+        
       } else {
+        #ifdef CWIFI
         if(LWIFI_STATUS_CONNECTED == LWiFi.status()) {
           LWiFi.disconnect();
         }
+        #endif
       }    
     }
     if(6 < ctReset) { // handle bluetooth      
@@ -196,24 +232,23 @@ void loop() {
   }
 
   if (millis() > send_next) {
+    #ifdef CWIFI
     if(LWIFI_STATUS_CONNECTED == LWiFi.status()) {      
+    #endif
+    #ifdef CGPRS
+    if(radioState) {
+    #endif
       sendData(sensordata);      
       send_next = millis() + SEND_INTERVAL;
     }    
   }
 
-  if(!radioState && !btState) {
+  if(!radioState && !btState) { // print data to serial, when no other option is available
     Serial.println(formatData(sensordata));
   }
   
 }
-/*
-  if(nextSave < currentTime) {
-    nextSave = currentTime + saveDuration;
-    saveData(currentTime);
-  }
-}
-*/
+
 void onSensor(Framework &sensor) {
   if (FWACCTYPE == sensor.getType()) {
     sensordata.acc = sensor.getData();
@@ -282,11 +317,11 @@ void sendData(struct Sensordata sensordata) {
   request += " HTTP/1.1";
   Serial.println(request);
 
-  Serial.println(c.connect("p435939.webspaceconfig.de", 80));
-  c.println(request);
-  c.println("Host: p435939.webspaceconfig.de");
-  c.println();
-  c.stop();
+  Serial.println(client.connect("p435939.webspaceconfig.de", 80));
+  client.println(request);
+  client.println("Host: p435939.webspaceconfig.de");
+  client.println();
+  client.stop();
 
 }
 
