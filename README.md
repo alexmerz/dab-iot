@@ -10,6 +10,7 @@
 
 * Humidity/Temperature sensor: D2
 * Dust sensor: D3
+* Hall sensor: D4
 * LED Bar: D5
 * Touch sensor: D7
 
