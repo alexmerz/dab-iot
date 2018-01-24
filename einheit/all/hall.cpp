@@ -27,7 +27,7 @@ void hallInit(const int pin) {
   pinMode(sensor.pin, INPUT);
   sensor.track_sensors = 0;
 
-  sensor.change_interval = 5000;
+  sensor.change_interval = 900000;
   sensor.last_state_change = 0;
   
   sensor.current_state = digitalRead(sensor.pin);
