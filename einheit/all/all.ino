@@ -1,5 +1,5 @@
-// #define CGPRS
-#define CWIFI
+#define CGPRS
+//#define CWIFI
 
 #include <LBT.h>
 #include <LBTServer.h>
@@ -33,12 +33,12 @@
 #define VODAFONE "m2m.vodafone.de"
 #define VODAFONE_USERNAME ""
 #define VODAFONE_PASSWORD
-#define TELEKOM "internet.telekom"
+#define TELEKOM "internet.t-mobile"
 #define TELEKOM_USERNAME "t-mobile"
 #define TELEKOM_PASSWORD "tm"
-#define AP VODAFONE 
-#define USERNAME VODAFONE_USERNAME
-#define PW VODAFONE_PASSWORD
+#define AP TELEKOM
+#define USERNAME TELEKOM_USERNAME
+#define PW TELEKOM_PASSWORD
 
 LGPRSClient client;
 #endif
@@ -148,6 +148,11 @@ void setup() {
   fwgps.setCallback(onSensor);  
 
   resetCapture();
+
+  #ifdef CGPRS
+  LGPRS.attachGPRS(AP, USERNAME, PW);
+  #endif  
+          
   ledbar.setBits(0);
 
   sensordata.dust = "\"dust\":\"0\"";
@@ -183,11 +188,7 @@ void loop() {
       if(radioState) {
         #ifdef CWIFI
         LWiFi.connect(AP, LWiFiLoginInfo(LWIFI_WPA, PW));
-        #endif
-
-        #ifdef CGPRS
-        LGPRS.attachGPRS(AP, USERNAME, PW);
-        #endif        
+        #endif      
         
       } else {
         #ifdef CWIFI
