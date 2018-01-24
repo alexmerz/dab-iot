@@ -28,6 +28,7 @@
 #include "FWUv.h"
 #include "FWGPS.h"
 #include "FWLight.h"
+#include "hall.h"
 
 #ifdef CGPRS
 #define VODAFONE "m2m.vodafone.de"
@@ -66,6 +67,9 @@ FWGPS fwgps(1000);
 int ctReset = 0;
 unsigned long touchResetDuration = 5000; // reset Touch counter after 5 seconds
 unsigned long nextTouchReset = 0;
+
+#define HALL_PIN 4
+#define TRACKING 1
 
 #define SEND_INTERVAL 1000L
 unsigned long send_next = 0;
@@ -114,6 +118,8 @@ void resetCapture() {
 void setup() {
   Serial.begin(9600);
 
+  hallInit(HALL_PIN);
+
   initDeviceId();
   Serial.print("Device ID: ");
   Serial.println(getDeviceId());
@@ -126,7 +132,7 @@ void setup() {
   did += "\"";
   sensordata.deviceid = did;
 
-  // Sebsor init
+  // Sensor init
   fwacc.init();
   fwbaro.init();
   fwhumi.init();
@@ -231,23 +237,25 @@ void loop() {
     }    
   }
 
-  if (millis() > send_next) {
-    #ifdef CWIFI
-    if(LWIFI_STATUS_CONNECTED == LWiFi.status()) {      
-    #endif
-    #ifdef CGPRS
-    if(radioState) {
-    #endif
-      sendData(sensordata);      
-      send_next = millis() + SEND_INTERVAL;
-    }    
-  }
-
-  if(!radioState && !btState) { // print data to serial, when no other option is available
-    Serial.println(formatData(sensordata));
-  }
-  
-}
+    if (hallCheck() == TRACKING) {
+      if (millis() > send_next) {
+        #ifdef CWIFI
+        if(LWIFI_STATUS_CONNECTED == LWiFi.status()) {      
+        #endif
+        #ifdef CGPRS
+        if(radioState) {
+        #endif
+          sendData(sensordata);      
+          send_next = millis() + SEND_INTERVAL;
+        }    
+      }
+    
+      if(!radioState && !btState) { // print data to serial, when no other option is available
+        Serial.println(formatData(sensordata));
+      }
+      
+    }
+    }
 
 void onSensor(Framework &sensor) {
   if (FWACCTYPE == sensor.getType()) {
