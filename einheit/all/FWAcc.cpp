@@ -68,7 +68,7 @@ String FWAcc::getData()
   int x,y,z;  
   adxl.readXYZ(&x, &y, &z);
   // und in einen String packen
-  String s = "\"zacc\":\"";
+  String s = "\"acceleration\":\"";
   s += z;
   s += "\"";  
   return s;

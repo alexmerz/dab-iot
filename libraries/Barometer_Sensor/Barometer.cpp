@@ -1,9 +1,9 @@
 /*
   Barometer library V1.0
   2010 Copyright (c) Seeed Technology Inc.  All right reserved.
- 
+
   Original Author: LG
-  
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
@@ -25,7 +25,7 @@
 void Barometer::init(void)
 {
     Wire.begin();
-    Serial.print("Temperaturet: ");
+    // Serial.print("Temperaturet: ");
     ac1 = bmp085ReadInt(0xAA);
     ac2 = bmp085ReadInt(0xAC);
     ac3 = bmp085ReadInt(0xAE);
@@ -37,7 +37,7 @@ void Barometer::init(void)
     mb = bmp085ReadInt(0xBA);
     mc = bmp085ReadInt(0xBC);
     md = bmp085ReadInt(0xBE);
-    Serial.print("Temperaturet2: ");
+    // Serial.print("Temperaturet2: ");
 }
 // Read 1 byte from the BMP085 at 'address'
 // Return: the read byte;
@@ -100,7 +100,7 @@ unsigned long Barometer::bmp085ReadUP()
 }
 void Barometer::writeRegister(int deviceAddress, byte address, byte val)
 {
-    Wire.beginTransmission(deviceAddress); // start transmission to device 
+    Wire.beginTransmission(deviceAddress); // start transmission to device
     Wire.write(address);       // send register address
     Wire.write(val);         // send value to write
     Wire.endTransmission();     // end transmission

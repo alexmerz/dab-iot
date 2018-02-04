@@ -44,7 +44,7 @@ Framework(30000)
 
 String FWDust2::getData()
 {
-  String data = "\"dust\":\"";
+  String data = "\"pollution\":\"";
   // Gerät muss warm laufen -> wait_before_measurement
   // Werte unter 0.63 -> 0
   // Werte über 1,114,000 sind nicht möglich -> 0

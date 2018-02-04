@@ -71,6 +71,8 @@ unsigned long nextTouchReset = 0;
 #define HALL_PIN 4
 #define TRACKING 1
 
+#define GPS_VALID 1
+
 #define SEND_INTERVAL 1000L
 unsigned long send_next = 0;
 
@@ -89,6 +91,9 @@ struct Sensordata {
   String light;
   String deviceid;
 } sensordata;
+
+void sendData(struct Sensordata sensordata);
+void sendDataBT(struct Sensordata sensordata);
 
 #define DEVICE_ID_LEN (15 + 1)
 
@@ -127,8 +132,8 @@ void setup() {
   ledbar.begin();
   ledbar.setLevel(10);
 
-  String did = "\"token\":\"";
-  did += getDeviceId();
+  String did = "\"";
+  did = getDeviceId();
   did += "\"";
   sensordata.deviceid = did;
 
@@ -157,12 +162,11 @@ void setup() {
   ledbar.setBits(0);
 
   sensordata.dust = "\"dust\":\"0\"";
-  sensordata.humi = "\"humi\":\"0\"";
+  sensordata.humi = "\"humidity\":\"0\"";
 
 }
 
 void loop() {
-  
   fwacc.check();
   fwbaro.check();
   fwhumi.check();
@@ -237,25 +241,30 @@ void loop() {
     }    
   }
 
-    if (hallCheck() == TRACKING) {
-      if (millis() > send_next) {
-        #ifdef CWIFI
-        if(LWIFI_STATUS_CONNECTED == LWiFi.status()) {      
-        #endif
-        #ifdef CGPRS
-        if(radioState) {
-        #endif
-          sendData(sensordata);      
-          send_next = millis() + SEND_INTERVAL;
-        }    
-      }
-    
-      if(!radioState && !btState) { // print data to serial, when no other option is available
-        Serial.println(formatData(sensordata));
-      }
-      
-    }
-    }
+//    if (fwgps.isValid() == GPS_VALID) {
+//        Serial.println("GPS found.");
+//        Serial.println(hallCheck());
+//        if (hallCheck() == TRACKING) {
+//          Serial.println("We are tracking.");
+          if (millis() > send_next) {
+            #ifdef CWIFI
+            if (LWIFI_STATUS_CONNECTED == LWiFi.status()) {      
+            #endif
+                #ifdef CGPRS
+                if (radioState) {
+                #endif
+                    sendData(sensordata);      
+                    send_next = millis() + SEND_INTERVAL;
+                }    
+            }
+        
+          if (!radioState && !btState) { // print data to serial, when no other option is available
+            Serial.println(formatData(sensordata));
+          }
+          
+          }
+//        }
+//    }
 
 void onSensor(Framework &sensor) {
   if (FWACCTYPE == sensor.getType()) {
@@ -288,14 +297,12 @@ void onSensor(Framework &sensor) {
 
 
 String formatData(struct Sensordata sensordata) {
-  String request = "{";
+  String request = "{\"deviceData\": {";
   request += sensordata.humi;
   request += ",";  
   request += sensordata.acc;
   request += ",";
   request += sensordata.baro;
-  request += ",";  
-  request += sensordata.gps;
   request += ",";
   request += sensordata.light;
   request += ",";
@@ -304,8 +311,16 @@ String formatData(struct Sensordata sensordata) {
   request += sensordata.dust;
   request += ",";  
   request += sensordata.sound;
-  request += ",";  
-  request += sensordata.deviceid;  
+  request += "},";
+  request += "\"deviceId\":\"";
+  request += sensordata.deviceid;
+  request += ",";
+//  request += "\"tourId\":\"";
+//  request += sensordata.deviceid;
+//  request += "-";
+//  request += fwgps.getTime();
+//  request += ",";
+  request += sensordata.gps;
   request += "}";
 
   return request;

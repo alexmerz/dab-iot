@@ -27,6 +27,10 @@ void FWGPS::off() {
   LGPS.powerOff();
 }
 
+int FWGPS::isValid() {
+    return (valid == "A") ? 1 : 0;
+}
+
 String FWGPS::getData()
 {
   time = "";
@@ -83,7 +87,7 @@ String FWGPS::getData()
 
   from = index+1;
   index = gprmc.indexOf(',', from);
-  valid = gprmc.substring(from, index); // Lat zwischen 2. und 3. Komma
+  valid = gprmc.substring(from, index); // Validity zwischen 2. und 3. Komma
 
   from = index+1;
   index = gprmc.indexOf(',', from);
@@ -111,17 +115,20 @@ String FWGPS::getData()
   index = gprmc.indexOf(',', from);
   date = gprmc.substring(from, index); // Lat zwischen 9. und 10. Komma
 
-  result = "\"lat\":\"";
-  result+= latitude;
-  result+= "\",\"long\":\"";
-  result+= longitude;
-  result+= "\",\"alt\":\"";
-  result+= altitude;
-  result+= "\",\"time\":\"";
-  result+= time;
-  result+= "\",\"date\":\"";
-  result+= date;
-  result+= "\"";
+  result = "\"location\": {\"type\": \"Point\", \"coordinates\": [";
+  result += latitude;
+  result += ",";
+  result += longitude;
+  result += "],";
+
+  result += "\"altitude\":";
+  result += altitude;
+  result += "}";
+
+  result += "\"dateTime\":";
+  result += date;
+  result += "T";
+  result += time;
         
   return result;
 }

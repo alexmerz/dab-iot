@@ -23,6 +23,7 @@ class FWGPS:public Framework
     void init();
     void on();
     void off();
+    int isValid();
   protected:  
     String time;
     String date;
