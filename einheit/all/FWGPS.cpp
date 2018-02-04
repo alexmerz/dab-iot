@@ -116,19 +116,24 @@ String FWGPS::getData()
   date = gprmc.substring(from, index); // Lat zwischen 9. und 10. Komma
 
   result = "\"location\": {\"type\": \"Point\", \"coordinates\": [";
+  result += "\"";
   result += latitude;
-  result += ",";
+  result += "\",\"";
   result += longitude;
-  result += "],";
+  result += "\"],";
 
   result += "\"altitude\":";
+  result += "\"";
   result += altitude;
-  result += "}";
+  result += "\"";
+  result += "},";
 
   result += "\"dateTime\":";
+  result += "\"";
   result += date;
   result += "T";
   result += time;
+  result += "\"";
         
   return result;
 }

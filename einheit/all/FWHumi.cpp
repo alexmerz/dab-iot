@@ -26,7 +26,7 @@ String FWHumi::getData() {
 
   String s("\"humidity\":\"");
    s.concat(humidity);
-   s.concat("\",\"temperature:\":");
+   s.concat("\",\"temperature\":\"");
    s.concat(temperature);
    s.concat("\"");
   return s;
