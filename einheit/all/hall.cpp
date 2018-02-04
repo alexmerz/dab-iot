@@ -41,6 +41,7 @@ static void hallUpdate(const unsigned long current_time) {
 
 int hallCheck() {
   unsigned long current_time = millis();
+  sensor.current_state = digitalRead(sensor.pin);
   
   if (sensor.current_state != sensor.last_state) {
     hallUpdate(current_time);

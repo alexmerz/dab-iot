@@ -241,11 +241,8 @@ void loop() {
     }    
   }
 
-//    if (fwgps.isValid() == GPS_VALID) {
-//        Serial.println("GPS found.");
-//        Serial.println(hallCheck());
-//        if (hallCheck() == TRACKING) {
-//          Serial.println("We are tracking.");
+    if (fwgps.isValid() == GPS_VALID) {
+        if (hallCheck() == TRACKING) {
           if (millis() > send_next) {
             #ifdef CWIFI
             if (LWIFI_STATUS_CONNECTED == LWiFi.status()) {      
@@ -263,8 +260,8 @@ void loop() {
           }
           
           }
-//        }
-//    }
+        }
+    }
 
 void onSensor(Framework &sensor) {
   if (FWACCTYPE == sensor.getType()) {
