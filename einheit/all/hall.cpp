@@ -22,14 +22,16 @@ struct hallSensor {
 
 static struct hallSensor sensor;
 
+
 void hallInit(const int pin) {
   sensor.pin = pin;
   pinMode(sensor.pin, INPUT);
+
   sensor.track_sensors = 0;
 
-  sensor.change_interval = 900000;
+  sensor.change_interval = 300000;
   sensor.last_state_change = 0;
-  
+
   sensor.current_state = digitalRead(sensor.pin);
   sensor.last_state = digitalRead(sensor.pin);
 }
