@@ -1,23 +1,10 @@
-// #define CGPRS
-#define CWIFI
-
 #include <LBT.h>
 #include <LBTServer.h>
 #include "Grove_LED_Bar.h"
 #include <vmsim.h>
 #include <LTask.h>
 #include <string.h>
-
-#ifdef CWIFI
-#include <LWiFi.h>
-#include <LWiFiClient.h>
-#endif
-
-#ifdef CGPRS
-#include <LGPRS.h>    
-#include <LGPRSClient.h>
-#endif
-
+#include <LSD.h>
 
 #include "FWAcc.h"
 #include "FWBaro.h"
@@ -86,8 +73,12 @@ void resetCapture() {
   ledbar.setBits(0);
 }
 
+void onSensor(Framework &sensor);
+
 void setup() {
   Serial.begin(9600);
+
+  LSD.begin();
 
   hallInit(HALL_PIN);
 
