@@ -29,28 +29,10 @@
 #include "FWGPS.h"
 #include "FWLight.h"
 #include "hall.h"
+#include "sendData.h"
+#include "sensordata.h"
 
-#ifdef CGPRS
-#define VODAFONE "m2m.vodafone.de"
-#define VODAFONE_USERNAME ""
-#define VODAFONE_PASSWORD
-#define TELEKOM "internet.telekom"
-#define TELEKOM_USERNAME "t-mobile"
-#define TELEKOM_PASSWORD "tm"
-#define AP VODAFONE 
-#define USERNAME VODAFONE_USERNAME
-#define PW VODAFONE_PASSWORD
-
-LGPRSClient client;
-#endif
-
-#ifdef CWIFI
-#define AP "SSID"
-#define PW "Password"
-
-LWiFiClient client;
-#endif
-
+struct Sensordata sensordata;
 
 Grove_LED_Bar ledbar(6,5,0);
 
@@ -78,22 +60,6 @@ unsigned long send_next = 0;
 
 boolean radioState = 0;
 boolean btState = 0;
-
-struct Sensordata {
-  String touch;
-  String acc;
-  String baro;  
-  String humi;
-  String sound;
-  String dust;
-  String uv;
-  String gps;
-  String light;
-  String deviceid;
-} sensordata;
-
-void sendData(struct Sensordata sensordata);
-void sendDataBT(struct Sensordata sensordata);
 
 #define DEVICE_ID_LEN (15 + 1)
 
@@ -167,101 +133,39 @@ void setup() {
 }
 
 void loop() {
-  fwacc.check();
-  fwbaro.check();
-  fwhumi.check();
-  fwsound.check();
-  fwtouch.check();
-  fwdust.check();
-  fwuv.check();
-  fwlight.check();
-  fwgps.check();
+    fwacc.check();
+    fwbaro.check();
+    fwhumi.check();
+    fwsound.check();
+    fwtouch.check();
+    fwdust.check();
+    fwuv.check();
+    fwlight.check();
+    fwgps.check();
 
-  unsigned long currentTime = millis();
+    unsigned long currentTime = millis();
 
-  if(btState && !LBTServer.connected()) {
-    LBTServer.accept(2);    
-  }
-  
-  if(nextTouchReset < currentTime) {
-    if(3 < ctReset && 6 >= ctReset) { // handle WIFI
-      ledbar.setLevel(0);
-      delay(100);
-      ledbar.setLevel(ctReset);
-      
-      radioState = !radioState;
-      if(radioState) {
-        #ifdef CWIFI
-        LWiFi.connect(AP, LWiFiLoginInfo(LWIFI_WPA, PW));
-        #endif
-
-        #ifdef CGPRS
-        LGPRS.attachGPRS(AP, USERNAME, PW);
-        #endif        
-        
-      } else {
-        #ifdef CWIFI
-        if(LWIFI_STATUS_CONNECTED == LWiFi.status()) {
-          LWiFi.disconnect();
-        }
-        #endif
-      }    
-    }
-    if(6 < ctReset) { // handle bluetooth      
-      if(!btState) {
-        Serial.println("BT warten");
-        ledbar.setLevel(0);
-        delay(100);
-        ledbar.setLevel(ctReset);
-
-        LBTServer.begin((uint8_t*)deviceId, (uint8_t*)"9876");
-        btState = 1;
-        LBTDeviceInfo info;
-        if (LBTServer.getHostDeviceInfo(&info))
-        {
-          Serial.printf("LBTServer.getHostDeviceInfo [%02x:%02x:%02x:%02x:%02x:%02x]", 
-            info.address.nap[1], info.address.nap[0], info.address.uap, info.address.lap[2], info.address.lap[1], info.address.lap[0]);
-        }        
-      } else {
-        LBTServer.end();
-        btState = 0;
-        Serial.println("BT beendet");
-      }
-    }
-    
-    ctReset = 0;
-    nextTouchReset = millis()+touchResetDuration;
-    ledbar.setLevel(0);
-  } else {
-    if(btState) {
-      ledbar.setLed(2,1);
-    }
-    if(radioState) {
-      ledbar.setLed(1,1);
-    }    
-  }
-
-    if (fwgps.isValid() == GPS_VALID) {
+//    if (fwgps.isValid() == GPS_VALID) {
         if (hallCheck() == TRACKING) {
-          if (millis() > send_next) {
-            #ifdef CWIFI
-            if (LWIFI_STATUS_CONNECTED == LWiFi.status()) {      
-            #endif
-                #ifdef CGPRS
-                if (radioState) {
-                #endif
-                    sendData(sensordata);      
-                    send_next = millis() + SEND_INTERVAL;
-                }    
-            }
-        
-          if (!radioState && !btState) { // print data to serial, when no other option is available
+//          if (millis() > send_next) {
+//            #ifdef CWIFI
+//            if (LWIFI_STATUS_CONNECTED == LWiFi.status()) {      
+//            #endif
+//                #ifdef CGPRS
+//                if (radioState) {
+//                #endif
+//                    sendData(sensordata);      
+//                    send_next = millis() + SEND_INTERVAL;
+//                }    
+//            }
+//
+//            // print data to serial, when no other option is available
+//            if (!radioState && !btState) {
+            saveData(sensordata);
             Serial.println(formatData(sensordata));
-          }
-          
-          }
-        }
-    }
+         }
+    //}
+}
 
 void onSensor(Framework &sensor) {
   if (FWACCTYPE == sensor.getType()) {
@@ -291,58 +195,4 @@ void onSensor(Framework &sensor) {
   sendDataBT(sensordata);
   
 }
-
-
-String formatData(struct Sensordata sensordata) {
-  String request = "{\"deviceData\": {";
-  request += sensordata.humi;
-  request += ",";  
-  request += sensordata.acc;
-  request += ",";
-  request += sensordata.baro;
-  request += ",";
-  request += sensordata.light;
-  request += ",";
-  request += sensordata.uv;
-  request += ",";
-  request += sensordata.dust;
-  request += ",";  
-  request += sensordata.sound;
-  request += "},";
-  request += "\"deviceId\":\"";
-  request += sensordata.deviceid;
-  request += ",";
-//  request += "\"tourId\":\"";
-//  request += sensordata.deviceid;
-//  request += "-";
-//  request += fwgps.getTime();
-//  request += ",";
-  request += sensordata.gps;
-  request += "}";
-
-  return request;
-}
-
-void sendDataBT(struct Sensordata sensordata) {
-  if(LBTServer.connected()) {
-    String str = formatData(sensordata);
-    str += "\n";
-    LBTServer.write((uint8_t*)str.c_str(), str.length());                  
-  }
-}
- 
-void sendData(struct Sensordata sensordata) {
-  String request = "GET /am-dab/write.php?d=";
-  request += formatData(sensordata);
-  request += " HTTP/1.1";
-  Serial.println(request);
-
-  Serial.println(client.connect("p435939.webspaceconfig.de", 80));
-  client.println(request);
-  client.println("Host: p435939.webspaceconfig.de");
-  client.println();
-  client.stop();
-
-}
-
 

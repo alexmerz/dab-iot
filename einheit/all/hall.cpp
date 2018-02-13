@@ -5,6 +5,7 @@ extern "C" {
 #endif
 
 #include "hall.h"
+
 struct hallSensor {
 
   int pin;
@@ -21,7 +22,6 @@ struct hallSensor {
 };
 
 static struct hallSensor sensor;
-
 
 void hallInit(const int pin) {
   sensor.pin = pin;
