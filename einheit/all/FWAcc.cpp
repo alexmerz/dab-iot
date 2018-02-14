@@ -65,11 +65,12 @@ void FWAcc::init()
 String FWAcc::getData()
 {  
   // Die Werte auslesen
-  int x,y,z;  
+  int x,y,z, sum;  
   adxl.readXYZ(&x, &y, &z);
+  sum = abs(x) + abs(y) + abs(z);
   // und in einen String packen
   String s = "\"zacc\":\"";
-  s += z;
+  s += sum;
   s += "\"";  
   return s;
 }
