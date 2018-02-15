@@ -79,12 +79,12 @@ String formatData(struct Sensordata sensordata) {
 
 void saveData(struct Sensordata sensordata) {
   LFile dataFile = LSD.open(LOGFILE, FILE_WRITE);
-
   String data = formatData(sensordata);
-  
-  dataFile.println(data);
-  dataFile.flush();
-  dataFile.close();
+
+  if (dataFile) {
+    dataFile.println(data);
+    dataFile.close();
+  }
 }
 
 void sendDataBT(struct Sensordata sensordata) {
