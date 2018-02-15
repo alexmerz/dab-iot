@@ -26,7 +26,7 @@ Grove_LED_Bar ledbar(6,5,0);
 FWAcc fwacc(500);
 FWBaro fwbaro(1000);
 FWHumi fwhumi(2000);
-FWSound fwsound(100);
+FWSound fwsound(400);
 FWTouch fwtouch(500);
 FWUv fwuv(500);
 FWDust2 fwdust;
