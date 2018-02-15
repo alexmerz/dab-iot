@@ -17,9 +17,8 @@ String FWLight::getData() {
 
     avg = (this->sum / this->samples);
 
-    String s = "\"light\":\"";
+    String s = "\"light\": ";
     s += avg;
-    s += "\"";
     return s;
 }
 

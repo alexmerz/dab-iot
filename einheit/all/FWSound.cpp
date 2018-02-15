@@ -17,9 +17,8 @@ String FWSound::getData() {
 
     avg = (this->sum / this->samples);
 
-    String s = "\"sound\":\"";
+    String s = "\"sound\": ";
     s += avg;
-    s += "\"";
     return s;
 
     return s;

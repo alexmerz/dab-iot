@@ -117,10 +117,6 @@ void setup() {
 
   resetCapture();
   ledbar.setBits(0);
-
-  sensordata.dust = "\"dust\":\"0\"";
-  sensordata.humi = "\"humidity\":\"0\"";
-
 }
 
 void loop() {

@@ -24,11 +24,10 @@ String FWHumi::getData() {
   // Variante 2:
   dht.readHT(&temperature, &humidity);
 
-  String s("\"humidity\":\"");
+  String s("\"humidity\": ");
    s.concat(humidity);
-   s.concat("\",\"temperature\":\"");
+   s.concat(", \"temperature\": ");
    s.concat(temperature);
-   s.concat("\"");
   return s;
 }
 

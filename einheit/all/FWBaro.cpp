@@ -17,9 +17,8 @@ String FWBaro::getData() {
 //  altitude = myBarometer.calcAltitude(pressure); //Uncompensated caculation - in Meters
   atm = pressure / 101325;
 
-  String s("\"pressure\":\"");  //display 2 decimal places
-  s.concat(atm);
-  s.concat("\"");    
+  String s("\"pressure\": ");  //display 2 decimal places
+  s.concat(atm);    
 /*   
  
     s.concat("\",\"temp\":\"");

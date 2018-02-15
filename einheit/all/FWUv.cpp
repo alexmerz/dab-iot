@@ -28,9 +28,8 @@ String FWUv::getData()
 {
   sensorValue = analogRead(UV_PIN);  
   float uvIndex = ((((5.0 / (float)sensorValue) / 4.3)) * 307.0)/200.0;
-  String s = "\"uv\":\"";
+  String s = "\"uv\": ";
   s += uvIndex;
-  s += "\"";
   return s;
 }
 
