@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "FWLight.h"
 
-#define LIGHT_PIN A1
+#define LIGHT_PIN A2
 
 FWLight::FWLight(unsigned long duration):
     Framework(duration) {
