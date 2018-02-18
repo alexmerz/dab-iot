@@ -1,9 +1,4 @@
-#include <LBT.h>
-#include <LBTServer.h>
 #include "Grove_LED_Bar.h"
-#include <vmsim.h>
-#include <LTask.h>
-#include <string.h>
 #include <LSD.h>
 
 #include "FWAcc.h"
@@ -42,30 +37,8 @@ unsigned long nextTouchReset = 0;
 
 #define GPS_VALID 1
 
-#define SEND_INTERVAL 1000L
+#define SEND_INTERVAL 10000
 unsigned long send_next = 0;
-
-boolean radioState = 0;
-boolean btState = 0;
-
-#define DEVICE_ID_LEN (15 + 1)
-
-static char deviceId[DEVICE_ID_LEN];
-
-boolean handleDeviceId(void *deviceId) {
-    char *imeiFromOs = NULL;
-    while((imeiFromOs = vm_get_imei()) == NULL)
-        ;
-    strncpy((char *)deviceId, imeiFromOs, DEVICE_ID_LEN);
-}
-
-void initDeviceId(void) {
-    LTask.remoteCall(&handleDeviceId, (void *)deviceId);
-}
-
-char *getDeviceId(void) {
-    return deviceId;
-}
 
 void resetCapture() {
   ctReset = 0;
@@ -113,10 +86,7 @@ void setup() {
   fwdust.setCallback(onSensor);
   fwuv.setCallback(onSensor);
   fwlight.setCallback(onSensor);  
-  fwgps.setCallback(onSensor);  
-
-  resetCapture();
-  ledbar.setBits(0);
+  fwgps.setCallback(onSensor);
 }
 
 void loop() {
@@ -132,26 +102,35 @@ void loop() {
 
     unsigned long currentTime = millis();
 
-//    if (fwgps.isValid() == GPS_VALID) {
-        if (hallCheck() == TRACKING) {
-//          if (millis() > send_next) {
-//            #ifdef CWIFI
-//            if (LWIFI_STATUS_CONNECTED == LWiFi.status()) {      
-//            #endif
-//                #ifdef CGPRS
-//                if (radioState) {
-//                #endif
-//                    sendData(sensordata);      
-//                    send_next = millis() + SEND_INTERVAL;
-//                }    
-//            }
+//    if (fwgps.isValid() != GPS_VALID) {
+//      return;
+//    }
+//    Serial.println("GPS found.");
 //
-//            // print data to serial, when no other option is available
-//            if (!radioState && !btState) {
-            saveData(sensordata);
-            Serial.println(formatData(sensordata));
-         }
-    //}
+//    String tourId = createTourId(fwgps);
+//    Serial.print("TourId: ");
+//    Serial.println(tourId);
+    
+//    if (hallCheck() != TRACKING) {
+//      return;
+//    }
+//    Serial.println("Tracking active.");
+//    
+//    if (currentTime < send_next) {
+//      Serial.println("Next send not reached.");
+//      return;
+//    }
+//    
+//    if (sendData(sensordata) != 0) {
+//       saveData(sensordata);
+//       Serial.println("No data connection. Writing to log file.");
+//       return;
+//    }
+//    Serial.println("Data sent.");
+//    
+//    send_next = currentTime + SEND_INTERVAL; 
+    
+    Serial.println(formatData(sensordata));
 }
 
 void onSensor(Framework &sensor) {
@@ -178,8 +157,5 @@ void onSensor(Framework &sensor) {
         nextTouchReset = millis()+touchResetDuration;
       }
   }
-
-  sendDataBT(sensordata);
-  
 }
 
