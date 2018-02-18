@@ -15,10 +15,10 @@
 #include "sensordata.h"
 #include "deviceId.h"
 
+// create sensor data struct instance
 struct Sensordata sensordata;
 
-Grove_LED_Bar ledbar(6,5,0);
-
+// create sensor objects
 FWAcc fwacc(500);
 FWBaro fwbaro(1000);
 FWHumi fwhumi(2000);
@@ -29,41 +29,39 @@ FWDust2 fwdust;
 FWLight fwlight(1000);
 FWGPS fwgps(1000);
 
-int ctReset = 0;
-unsigned long touchResetDuration = 5000; // reset Touch counter after 5 seconds
-unsigned long nextTouchReset = 0;
-
+// macros for hall sensor
 #define HALL_PIN 4
 #define TRACKING 1
 
+// macros for gps module
 #define GPS_VALID 1
 
+// macros for sending data via mobile connection
 #define SEND_INTERVAL 10000
 unsigned long send_next = 0;
-
-void resetCapture() {
-  ctReset = 0;
-  ledbar.setLevel(10);
-  ledbar.setBits(0);
-}
 
 void onSensor(Framework &sensor);
 
 void setup() {
   Serial.begin(9600);
 
+  // initialize log file object
   LSD.begin();
 
+  // initialize hall sensor
   hallInit(HALL_PIN);
 
-  initDeviceId(sensordata);
-  Serial.print("Device ID: ");
-  Serial.println(getDeviceId());
+  // get deviceId
+  initDeviceId();
+  String did = "\"";
+  did += getDeviceId();
+  did += "\"";
+  sensordata.deviceid = did;
 
-  ledbar.begin();
-  ledbar.setLevel(10);
+  // initialize tourId as empty
+  sensordata.tourid = "";
 
-  // Sensor init
+  // initialize sensors
   fwacc.init();
   fwbaro.init();
   fwhumi.init();
@@ -74,6 +72,7 @@ void setup() {
   fwgps.init();
   fwlight.init();
 
+  // initialize callbacks for sensors
   fwacc.setCallback(onSensor);
   fwbaro.setCallback(onSensor);
   fwhumi.setCallback(onSensor);
@@ -86,6 +85,8 @@ void setup() {
 }
 
 void loop() {
+
+    // check sensors for data
     fwacc.check();
     fwbaro.check();
     fwhumi.check();
@@ -96,36 +97,48 @@ void loop() {
     fwlight.check();
     fwgps.check();
 
+    // get current timestamp
     unsigned long currentTime = millis();
 
-//    if (fwgps.isValid() != GPS_VALID) {
-//      return;
-//    }
-//    Serial.println("GPS found.");
-//
-//    String tourId = createTourId(fwgps);
-//    Serial.print("TourId: ");
-//    Serial.println(tourId);
-    
+    // wait for stable gps signal
+    if (fwgps.isValid() != GPS_VALID) {
+      return;
+    }
+    Serial.println("GPS found.");
+
+    // wait for hall sensor response
 //    if (hallCheck() != TRACKING) {
+//      sensordata.tourid = "";
 //      return;
 //    }
 //    Serial.println("Tracking active.");
-//    
-//    if (currentTime < send_next) {
-//      Serial.println("Next send not reached.");
-//      return;
-//    }
-//    
-//    if (sendData(sensordata) != 0) {
-//       saveData(sensordata);
-//       Serial.println("No data connection. Writing to log file.");
-//       return;
-//    }
-//    Serial.println("Data sent.");
-//    
-//    send_next = currentTime + SEND_INTERVAL; 
-    
+
+    // create new tourId when previous tour is over
+    if (sensordata.tourid == "") {
+        sensordata.tourid = createTourId(fwgps);
+        Serial.println("Created new tour id.");
+        Serial.print("TourId: ");
+        Serial.println(sensordata.tourid);
+    }
+
+    // wait for next sending time
+    if (currentTime < send_next) {
+      Serial.println("Next send not reached.");
+      return;
+    }
+
+    // write data to log file when no data connection
+    if (sendData(sensordata) != 0) {
+       saveData(sensordata);
+       Serial.println("No data connection. Writing to log file.");
+       return;
+    }
+    Serial.println("Data sent.");
+
+    // get new sending time
+    send_next = currentTime + SEND_INTERVAL; 
+
+    // write data to serial
     Serial.println(formatData(sensordata));
 }
 
