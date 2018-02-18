@@ -13,6 +13,7 @@
 #include "hall.h"
 #include "sendData.h"
 #include "sensordata.h"
+#include "deviceId.h"
 
 struct Sensordata sensordata;
 
@@ -55,17 +56,12 @@ void setup() {
 
   hallInit(HALL_PIN);
 
-  initDeviceId();
+  initDeviceId(sensordata);
   Serial.print("Device ID: ");
   Serial.println(getDeviceId());
 
   ledbar.begin();
   ledbar.setLevel(10);
-
-  String did = "\"";
-  did = getDeviceId();
-  did += "\"";
-  sensordata.deviceid = did;
 
   // Sensor init
   fwacc.init();
