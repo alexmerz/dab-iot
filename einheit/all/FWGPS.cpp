@@ -118,11 +118,11 @@ String FWGPS::getData()
   index = gprmc.indexOf(',', from);
   date = gprmc.substring(from, index); // Lat zwischen 9. und 10. Komma
 
-  String result = "\"location\": {\"type\": \"Point\", \"coordinates\": [";
+  String result = "\"location\": {\"type\": \"Point\", \"coordinates\": [\"";
   result += latitude;
-  result += ",";
+  result += "\",\"";
   result += longitude;
-  result += "],";
+  result += "\"],";
 
   result += "\"altitude\":";
   result += "\"";
