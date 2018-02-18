@@ -15,6 +15,7 @@ struct Sensordata {
   String gps;
   String light;
   String deviceid;
+  String tourid;
 };
 
 #ifdef __cplusplus

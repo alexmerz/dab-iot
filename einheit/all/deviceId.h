@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 boolean handleDeviceId(void *deviceId);
-void initDeviceId(struct Sensordata sensordata);
+void initDeviceId();
 char *getDeviceId(void);
 String createTourId(FWGPS g);
 

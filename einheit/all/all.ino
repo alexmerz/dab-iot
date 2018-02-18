@@ -146,12 +146,6 @@ void onSensor(Framework &sensor) {
     sensordata.light = sensor.getData();
   } else if (FWDUST2TYPE == sensor.getType()) {
     sensordata.dust = sensor.getData();
-  } else if (FWTOUCHTYPE == sensor.getType()) {          
-      if(sensor.getData().equals("1")) {
-        ctReset++;
-        ledbar.setLevel(ctReset);
-        nextTouchReset = millis()+touchResetDuration;
-      }
   }
 }
 

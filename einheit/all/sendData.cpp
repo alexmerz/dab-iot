@@ -9,6 +9,7 @@ extern "C" {
 
 #include "sendData.h"
 #include "sensordata.h"
+#include "deviceId.h"
 
 #define LOGFILE "log.csv"
 
@@ -43,14 +44,12 @@ String formatData(struct Sensordata sensordata) {
   request += ", ";  
   request += sensordata.sound;
   request += "}, ";
-  request += "\"deviceId\":\"";
+  request += "\"deviceId\":";
   request += sensordata.deviceid;
   request += ", ";
-//  request += "\"tourId\":\"";
-//  request += sensordata.deviceid;
-//  request += "-";
-//  request += fwgps.getTime();
-//  request += ", ";
+  request += "\"tourId\":\"";
+  request += sensordata.tourid;
+  request += "\", ";
   request += sensordata.gps;
   request += "}";
 

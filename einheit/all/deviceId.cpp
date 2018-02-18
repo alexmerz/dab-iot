@@ -24,12 +24,8 @@ boolean handleDeviceId(void *deviceId) {
     strncpy((char *)deviceId, imeiFromOs, DEVICE_ID_LEN);
 }
 
-void initDeviceId(struct Sensordata sensordata) {
+void initDeviceId() {
     LTask.remoteCall(&handleDeviceId, (void *)deviceId);
-    String did = "\"";
-    did = getDeviceId();
-    did += "\"";
-    sensordata.deviceid = did;
 }
 
 char *getDeviceId(void) {
@@ -43,12 +39,12 @@ String createTourId(FWGPS g) {
         Serial.println("No gps response.");
         return "";
     }
-    Serial.println(gpsResponse);
+
     int pos = 0;
     pos = gpsResponse.indexOf("\"dateTime\":");
     String dateTimePos = gpsResponse.substring(pos);
 
-    String dateTime = dateTimePos.substring(dateTimePos.length() - 12, 12);
+    String dateTime = dateTimePos.substring(12, 25);
     
     String tourId = "";
     tourId += getDeviceId();
