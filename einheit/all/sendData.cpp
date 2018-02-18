@@ -1,35 +1,20 @@
 #include "Arduino.h"
 #include <LSD.h>
+#include <LGPRS.h>    
+#include <LGPRSClient.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-//#define CGPRS
-#define CWIFI
 
 #include "sendData.h"
 #include "sensordata.h"
 
 #define LOGFILE "log.csv"
 
-#include <LBT.h>
-#include <LBTServer.h>
-
-#ifdef CWIFI
-#include <LWiFi.h>
-#include <LWiFiClient.h>
-#endif
-
-#ifdef CGPRS
-#include <LGPRS.h>    
-#include <LGPRSClient.h>
-#endif
-
-#ifdef CGPRS
 #define VODAFONE "m2m.vodafone.de"
-#define VODAFONE_USERNAME ""
-#define VODAFONE_PASSWORD
+#define VODAFONE_USERNAME NULL
+#define VODAFONE_PASSWORD NULL
 #define TELEKOM "internet.telekom"
 #define TELEKOM_USERNAME "t-mobile"
 #define TELEKOM_PASSWORD "tm"
@@ -37,15 +22,10 @@ extern "C" {
 #define USERNAME VODAFONE_USERNAME
 #define PW VODAFONE_PASSWORD
 
-LGPRSClient client;
-#endif
+#define SERVER_NAME "stage-geobikeserver.herokuapp.com"
+#define POST_URL "/test-sensordata"
+#define POST_PORT 80
 
-#ifdef CWIFI
-#define AP "SSID"
-#define PW "Password"
-
-LWiFiClient client;
-#endif
 
 String formatData(struct Sensordata sensordata) {
   String request = "{\"deviceData\": {";
@@ -87,26 +67,28 @@ void saveData(struct Sensordata sensordata) {
   }
 }
 
-void sendDataBT(struct Sensordata sensordata) {
-  if(LBTServer.connected()) {
-    String str = formatData(sensordata);
-    str += "\n";
-    LBTServer.write((uint8_t*)str.c_str(), str.length());                  
-  }
-}
  
-void sendData(struct Sensordata sensordata) {
-  String request = "GET /am-dab/write.php?d=";
-  request += formatData(sensordata);
-  request += " HTTP/1.1";
-  Serial.println(request);
+int sendData(struct Sensordata sensordata) {
+  LGPRSClient client;
+  int res = LGPRS.attachGPRS(AP, USERNAME, PW);
+  if (!res) {
+    return 1;
+  }
+  if (!client.connect(SERVER_NAME, POST_PORT)) {
+    return 2;
+  }
 
-  Serial.println(client.connect("p435939.webspaceconfig.de", 80));
-  client.println(request);
-  client.println("Host: p435939.webspaceconfig.de");
+  client.println("POST " POST_URL " HTTP/1.1");
+  client.println("Host: " SERVER_NAME);
+  client.println("Connection: close");
+  client.println("Content-Type: application/json");
+  client.print("Content-Length: ");
+  client.println(formatData(sensordata).length());
   client.println();
+  client.println(formatData(sensordata));
   client.stop();
-
+  
+  return 0;
 }
 
 #ifdef __cplusplus

@@ -6,8 +6,7 @@ extern "C" {
 
 String formatData(struct Sensordata sensordata);
 void saveData(struct Sensordata sensordata);
-void sendDataBT(struct Sensordata sensordata);
-void sendData(struct Sensordata sensordata);
+int sendData(struct Sensordata sensordata);
 
 #ifdef __cplusplus
 }
