@@ -59,7 +59,7 @@ String FWGPS::getData()
 
   from = index+1;
   index = gpgga.indexOf(',', from);
-//  latitude.concat(gpgga.substring(from, index)); // N oder S, zwischen 3. und 4. 
+  latitude.concat(gpgga.substring(from, index)); // N oder S, zwischen 3. und 4. 
 
   from = index+1;
   index = gpgga.indexOf(',', from);
@@ -67,7 +67,7 @@ String FWGPS::getData()
 
   from = index+1;
   index = gpgga.indexOf(',', from);
-//  longitude.concat(gpgga.substring(from, index)); // W oder E, zwischen 5. und 6. 
+  longitude.concat(gpgga.substring(from, index)); // W oder E, zwischen 5. und 6. 
 
   // drei Kommas überspringen
   for(int i = 0; i < 3; i++) {
@@ -98,7 +98,7 @@ String FWGPS::getData()
 
   from = index+1;
   index = gprmc.indexOf(',', from);
-//  latitude.concat(gprmc.substring(from, index)); // N oder S, zwischen 4. und 5. 
+  latitude.concat(gprmc.substring(from, index)); // N oder S, zwischen 4. und 5. 
 
   from = index+1;
   index = gprmc.indexOf(',', from);
@@ -106,7 +106,7 @@ String FWGPS::getData()
 
   from = index+1;
   index = gprmc.indexOf(',', from);
-//  longitude.concat(gprmc.substring(from, index)); // W oder E, zwischen 6. und 7. 
+  longitude.concat(gprmc.substring(from, index)); // W oder E, zwischen 6. und 7. 
 
   // zwei Kommas überspringen
   for(int i = 0; i < 2; i++) {
@@ -118,16 +118,10 @@ String FWGPS::getData()
   index = gprmc.indexOf(',', from);
   date = gprmc.substring(from, index); // Lat zwischen 9. und 10. Komma
 
-  double latitude_f;
-  double longitude_f;
-
-  latitude_f = atof(latitude.c_str()) / 100.0;
-  longitude_f = atof(longitude.c_str()) / 100.0;
-
   String result = "\"location\": {\"type\": \"Point\", \"coordinates\": [";
-  result += latitude_f;
+  result += latitude;
   result += ",";
-  result += longitude_f;
+  result += longitude;
   result += "],";
 
   result += "\"altitude\":";
